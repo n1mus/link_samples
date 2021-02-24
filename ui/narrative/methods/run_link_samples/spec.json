@@ -7,18 +7,75 @@
     "categories": ["active"],
     "widgets": {
         "input": null,
-        "output": null
+        "output": "no-display" 
     },
+    "parameter-groups": [
+        {
+            "id": "links",
+            "parameters": [
+                "sample_name",
+                "reads_upa"
+            ],
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": true,
+            "with_border": true
+        }
+    ],
     "parameters": [ 
         {
-            "id": "parameter_1",
-            "optional": true,
+            "id": "sample_set_upa",
+            "optional": false,
             "advanced": false,
             "allow_multiple": false,
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": [ ]
+                "valid_ws_types": [ "KBaseSets.SampleSet" ]
+            }
+        }, {
+            "id": "sample_name",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "textsubdata",
+            "textsubdata_options": {
+                "multiselection": false,
+                "show_src_obj": false,
+                "allow_custom": false,
+                "subdata_selection": {
+                    "parameter_id": "sample_set_upa",
+                    "path_to_subdata": [
+                        "samples"
+                    ],
+                    "subdata_included": [
+                        "samples/[*]/name",
+                        "samples/[*]/version",
+                        "samples/[*]/id"
+                    ],
+                    "selection_id": "name",
+                    "selection_description": [
+                        "name",
+                        "version",
+                        "id"
+                    ],
+                    "description_template": "ver: {{version}}, id: {{id}}"
+                }
+            }
+        }, {
+            "id": "reads_upa",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": [ 
+                    "KBaseSets.ReadsSet", 
+                    "KBaseFile.SingleEndLibrary", 
+                    "KBaseFile.PairedEndLibrary" 
+                ]
             }
         }
     ],
@@ -35,8 +92,19 @@
                     "narrative_system_variable": "workspace_id",
                     "target_property": "workspace_id"
                 },{
-                    "input_parameter": "parameter_1",
-                    "target_property": "parameter_1"
+                    "input_parameter": "sample_set_upa",
+                    "target_property": "sample_set_upa",
+                    "target_type_transform": "resolved-ref"
+                },{
+                    "input_parameter": "sample_name",
+                    "target_property": "sample_name"
+                },{
+                    "input_parameter": "reads_upa",
+                    "target_property": "reads_upa",
+                    "target_type_transform": "resolved-ref"
+                },{
+                    "input_parameter": "links",
+                    "target_property": "links"
                 }
             ],
             "output_mapping": [

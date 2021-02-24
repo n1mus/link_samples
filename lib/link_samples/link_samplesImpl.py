@@ -4,6 +4,10 @@ import logging
 import os
 
 from installed_clients.KBaseReportClient import KBaseReport
+from installed_clients.DataFileUtilClient import DataFileUtil
+from installed_clients.SampleServiceClient import SampleService
+from link_samples.impl.config import app
+from link_samples.impl import workflow
 #END_HEADER
 
 
@@ -35,6 +39,12 @@ class link_samples:
         #BEGIN_CONSTRUCTOR
         self.callback_url = os.environ['SDK_CALLBACK_URL']
         self.shared_folder = config['scratch']
+        self.serviceWizardURL = config['srv-wiz-url']
+        app.update(dict(
+            shared_folder=self.shared_folder,
+            dfu=DataFileUtil(self.callback_url),
+            kbr=KBaseReport(self.callback_url),
+        ))
         logging.basicConfig(format='%(created)s %(levelname)s: %(message)s',
                             level=logging.INFO)
         #END_CONSTRUCTOR
@@ -51,10 +61,18 @@ class link_samples:
         # ctx is the context object
         # return variables are: output
         #BEGIN run_link_samples
+
+        logging.info(params)
+
+        app.ss = SampleService(self.serviceWizardURL, token=ctx['token'], service_ver='beta')
+
+        workflow.link_reads_to_samples(params)
+
+
         report = KBaseReport(self.callback_url)
-        report_info = report.create({'report': {'objects_created':[],
-                                                'text_message': params['parameter_1']},
-                                                'workspace_name': params['workspace_name']})
+        report_info = report.create_extended_report({
+            'workspace_name': params['workspace_name'],
+        })
         output = {
             'report_name': report_info['name'],
             'report_ref': report_info['ref'],

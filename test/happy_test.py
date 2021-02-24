@@ -4,14 +4,27 @@ import time
 import unittest
 from configparser import ConfigParser
 
-from link_samples.link_samplesImpl import link_samples
 from link_samples.link_samplesServer import MethodContext
 from link_samples.authclient import KBaseAuth as _KBaseAuth
-
 from installed_clients.WorkspaceClient import Workspace
 
+from link_samples.link_samplesImpl import link_samples
+from .data import *
 
 class link_samplesTest(unittest.TestCase):
+
+    def test_your_method(self):
+        ret = self.serviceImpl.run_link_samples(
+            self.ctx, {
+                'workspace_name': self.wsName,
+                'sample_set_upa': ReadLinkingTestSampleSet,
+                'links': [
+                    {'sample_name': '0408-FW021.46.11.27.12.10', 'reads_upa': rhodo_art_jgi_reads},
+                    {'sample_name': '0408-FW021.7.26.12.02', 'reads_upa': rhodobacter_art_q50_SE_reads},
+                    {'sample_name': '0408-FW021.46.11.27.12.02', 'reads_upa': Example_Reads_Libraries},
+                ]
+            })
+
 
     @classmethod
     def setUpClass(cls):
@@ -52,16 +65,3 @@ class link_samplesTest(unittest.TestCase):
             cls.wsClient.delete_workspace({'workspace': cls.wsName})
             print('Test workspace was deleted')
 
-    # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
-    def test_your_method(self):
-        # Prepare test objects in workspace if needed using
-        # self.getWsClient().save_objects({'workspace': self.getWsName(),
-        #                                  'objects': []})
-        #
-        # Run your method by
-        # ret = self.getImpl().your_method(self.getContext(), parameters...)
-        #
-        # Check returned data with
-        # self.assertEqual(ret[...], ...) or other unittest methods
-        ret = self.serviceImpl.run_link_samples(self.ctx, {'workspace_name': self.wsName,
-                                                             'parameter_1': 'Hello World!'})
